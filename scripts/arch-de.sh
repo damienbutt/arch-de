@@ -69,7 +69,6 @@ select OPT in gnome kde cinnamon xfce quit; do
         DE_PKGS=(
             'sddm'
             'plasma'
-            'kde-applications'
             'plasma-wayland-session'
         )
 
@@ -107,7 +106,6 @@ select OPT in gnome kde cinnamon xfce quit; do
             'lightdm-gtk-greeter'
             'lightdm-gtk-greeter-settings'
             'xfce4'
-            'xfce4-goodies'
         )
 
         DE_SERVICES=(
