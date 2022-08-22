@@ -20,7 +20,7 @@ A bash script to install various desktop environments on Arch Linux.
 
 ## Contents 📖
 
-<!-- -   [Features :package:](#features-package) -->
+-   [Features :package:](#features-package)
 -   [Usage :rocket:](#usage-rocket)
 -   [Team :soccer:](#team-soccer)
 -   [Contributors :sparkles:](#contributors-sparkles)
@@ -29,60 +29,18 @@ A bash script to install various desktop environments on Arch Linux.
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-<!-- ## Features :package:
+## Features :package:
 
--   EFI Partition (260M)
--   BTRFS Root Partition (Remaining Space)
-    -   Subvolumes
-        -   @
-        -   @home
-        -   @log
-        -   @cache
-        -   @snapshots
-        -   @swap
-    -   Automatic snapshots provided by `snapper` and `snap-pac`
--   LUKS1 Full Disk Encryption including boot directory
--   GRUB Bootloader
--   Paru AUR Helper
--   ZRAM (1GB)
--   Swapfile (System Memory + 2GB)
--   Arch NetBoot -->
+-   Supported Desktop environments:
+    -   gnome
+    -   kde
+    -   xfce
+    -   cinnamon
+-   Bluetooth support
+-   Printing support
+-   Flatpak support
 
 ## Usage :rocket:
-
-<!-- 1. Download the latest version of the live ISO from [here](https://www.archlinux.org/download/) and boot into it.
-
-    - If you're installing on bare metal, you'll need to burn the ISO to a USB flash drive. A great tool for this is [Etcher](https://etcher.io/). It is free and open source software.
-
-2. (Optional) Setup WiFi.
-
-    - If you need to connect to WiFi for network connectivity, follow the instructions [here](https://wiki.archlinux.org/title/Iwd#iwctl).
-
-3. Confirm internet connectivity.
-
-    ```bash
-    ping -c 4 archlinux.org
-    ```
-
-4. (Optional) Set the root user password to allow SSH access. This is not required but recommended to allow copy/paste functionality.
-
-    1. Get the IP address of the machine.
-
-        ```bash
-        ip a
-        ```
-
-    2. Set the root user password.
-
-        ```bash
-        passwd root
-        ```
-
-    3. From a remote machine SSH into the environment.
-
-        ```bash
-        ssh root@<ip>
-        ``` -->
 
 1. Run the following command:
 
