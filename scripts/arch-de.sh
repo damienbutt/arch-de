@@ -247,6 +247,9 @@ elif lspci | grep -E "Radeon"; then
 elif lspci | grep -E "Integrated Graphics Controller"; then
     ohai "Installing: intel drivers"
     paru -S libva-intel-driver libvdpau-va-gl lib32-vulkan-intel vulkan-intel libva-intel-driver libva-utils --needed --noconfirm
+else
+    ohai "Installing: vm drivers"
+    paru -S xf86-video-vmware open-vm-tools --needed --noconfirm
 fi
 
 ohai "Enabling services to start at boot"
