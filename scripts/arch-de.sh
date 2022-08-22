@@ -202,7 +202,6 @@ PKGS=(
     'ttf-croscore'
     'ttf-dejavu'
     'ttf-droid'
-    'gnu-free-fonts'
     'ttf-ibm-plex'
     'ttf-liberation'
     'ttf-linux-libertine'
@@ -220,8 +219,6 @@ PKGS=(
     'ttf-jetbrains-mono'
     'ttf-monofur'
     'ttf-ms-fonts'
-    'adobe-source-code-pro-fonts'
-    'cantarell-fonts'
     'inter-font'
     'ttf-opensans'
     'gentium-plus-font'
@@ -229,7 +226,6 @@ PKGS=(
     'adobe-source-han-sans-otc-fonts'
     'adobe-source-han-serif-otc-fonts'
     'noto-fonts-cjk'
-    'noto-fonts-emoji'
 )
 
 for PKG in "${PKGS[@]}"; do
