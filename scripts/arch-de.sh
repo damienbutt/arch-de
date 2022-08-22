@@ -51,9 +51,8 @@ select OPT in gnome kde cinnamon xfce quit; do
         DE_PKGS=(
             'gdm'
             'gnome'
-            'gnome-extra'
-            'gnome-themes-extra'
             'gnome-tweaks'
+            'gnome-themes-extra'
             'gnome-software-packagekit-plugin'
         )
 
