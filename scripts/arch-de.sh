@@ -206,6 +206,7 @@ elif lspci | grep -E "Integrated Graphics Controller"; then
 else
     ohai "Installing: vm drivers"
     paru -S xf86-video-vmware open-vm-tools --needed --noconfirm
+    VM='true'
 fi
 
 ohai "Enabling services to start at boot"
@@ -221,6 +222,16 @@ done
 for SERVICE in "${DE_SERVICES[@]}"; do
     sudo systemctl enable "${SERVICE}" &>/dev/null
 done
+
+if [ ${VM} == 'true' ]; then
+    SERVICES=(
+        'vmtoolsd'
+    )
+
+    for SERVICE in "${SERVICES[@]}"; do
+        sudo systemctl enable "${SERVICE}" &>/dev/null
+    done
+fi
 
 ohai "Configuring AppArmor and Audit"
 sudo groupadd -r audit
