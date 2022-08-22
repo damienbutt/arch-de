@@ -43,6 +43,10 @@ EOABORT
     )"
 fi
 
+# Download dependencies
+curl -fsSL https://raw.githubusercontent.com/damienbutt/arch-de/HEAD/scripts/arch-de-utils.sh >~/arch-de-utils.sh
+source ~/arch-de-utils.sh
+
 PS3="Select desktop environment: "
 select OPT in gnome kde cinnamon xfce quit; do
     case ${OPT} in
@@ -124,10 +128,6 @@ select OPT in gnome kde cinnamon xfce quit; do
         ;;
     esac
 done
-
-# Download dependencies
-curl -fsSL https://raw.githubusercontent.com/damienbutt/arch-de/HEAD/scripts/arch-de-utils.sh >~/arch-de-utils.sh
-source ~/arch-de-utils.sh
 
 # Start the actual installation
 clear
