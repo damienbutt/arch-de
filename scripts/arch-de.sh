@@ -129,8 +129,6 @@ done
 curl -fsSL https://raw.githubusercontent.com/damienbutt/arch-de/HEAD/scripts/arch-de-utils.sh >arch-de-utils.sh
 source arch-de-utils.sh
 
-SCRIPT_DIR="$(cd -- "$(dirname -- "")" &>/dev/null && pwd)"
-
 # Start the actual installation
 clear
 ohai "Starting Arch-DE installation"
@@ -143,9 +141,9 @@ sudo reflector -a 48 -c ${ISO} -f 5 -l 20 --sort rate --save /etc/pacman.d/mirro
 paru -Syyy &>/dev/null
 
 ohai "Setting up firewall with sensible defaults"
-sudo firewall-cmd --add-port=1025-65535/tcp --permanent
-sudo firewall-cmd --add-port=1025-65535/udp --permanent
-sudo firewall-cmd --reload
+sudo firewall-cmd --add-port=1025-65535/tcp --permanent &>/dev/null
+sudo firewall-cmd --add-port=1025-65535/udp --permanent &>/dev/null
+sudo firewall-cmd --reload &>/dev/null
 
 ohai "Installing common packages"
 PKGS=(
@@ -245,5 +243,9 @@ Exec=aa-notify -p -s 1 -w 60 -f /var/log/audit/audit.log
 StartupNotify=false
 NoDisplay=true
 EOF
+
+ohai "Cleaning up"
+rm ~/arch-de-utils.sh
+cleanup
 
 ohai "Arch-DE installation successful!"

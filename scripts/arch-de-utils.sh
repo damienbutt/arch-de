@@ -92,5 +92,10 @@ function reboot_after_delay() {
 }
 
 function cleanup() {
-
+    unset ISO
+    unset PKGS
+    unset SERVICES
+    unset DE_PKGS
+    unset DE_SERVICES
+    unset DE
 }
