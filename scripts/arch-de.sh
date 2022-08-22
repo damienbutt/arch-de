@@ -82,7 +82,7 @@ select OPT in gnome kde cinnamon xfce quit; do
         ;;
     cinnamon)
         ohai "Selected cinnamon"
-        PKGS=(
+        DE_PKGS=(
             'lightdm'
             'lightdm-gtk-greeter'
             'lightdm-gtk-greeter-settings'
@@ -101,7 +101,7 @@ select OPT in gnome kde cinnamon xfce quit; do
         ;;
     xfce)
         ohai "Selected xfce"
-        PKGS=(
+        DE_PKGS=(
             'lightdm'
             'lightdm-gtk-greeter'
             'lightdm-gtk-greeter-settings'
