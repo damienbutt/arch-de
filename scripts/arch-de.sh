@@ -191,46 +191,6 @@ for PKG in "${DE_PKGS[@]}"; do
     paru -S "${PKG}" --noconfirm --needed
 done
 
-ohai "Installing fonts"
-PKGS=(
-    'dina-font'
-    'tamsyn-font'
-    'bdf-unifont'
-    'ttf-bitstream-vera'
-    'ttf-croscore'
-    'ttf-dejavu'
-    'ttf-droid'
-    'ttf-ibm-plex'
-    'ttf-liberation'
-    'ttf-linux-libertine'
-    'noto-fonts'
-    'ttf-roboto'
-    'tex-gyre-fonts'
-    'ttf-ubuntu-font-family'
-    'ttf-anonymous-pro'
-    'ttf-cascadia-code'
-    'ttf-fantasque-sans-mono'
-    'ttf-fira-mono'
-    'ttf-hack'
-    'ttf-fira-code'
-    'ttf-inconsolata'
-    'ttf-jetbrains-mono'
-    'ttf-monofur'
-    'ttf-ms-fonts'
-    'inter-font'
-    'ttf-opensans'
-    'gentium-plus-font'
-    'ttf-junicode'
-    'adobe-source-han-sans-otc-fonts'
-    'adobe-source-han-serif-otc-fonts'
-    'noto-fonts-cjk'
-)
-
-for PKG in "${PKGS[@]}"; do
-    ohai "Installing: ${PKG}"
-    paru -S "${PKG}" --noconfirm --needed
-done
-
 ohai "Detecting your video hardware"
 if lspci | grep -E "NVIDIA|GeForce"; then
     ohai "Installing: nvidia drivers"
