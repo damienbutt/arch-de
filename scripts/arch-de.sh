@@ -43,23 +43,107 @@ EOABORT
     )"
 fi
 
+PS3="Select desktop environment: "
+select OPT in gnome kde cinnamon xfce quit; do
+    case ${OPT} in
+    gnome)
+        ohai "Selected gnome"
+        DE_PKGS=(
+            'gdm'
+            'gnome'
+            'gnome-extra'
+            'gnome-themes-extra'
+            'gnome-tweaks'
+            'gnome-software-packagekit-plugin'
+        )
+
+        DE_SERVICES=(
+            'gdm'
+        )
+
+        DE='gnome'
+
+        break
+        ;;
+    kde)
+        ohai "Selected kde"
+        DE_PKGS=(
+            'sddm'
+            'plasma'
+            'kde-applications'
+            'plasma-wayland-session'
+        )
+
+        DE_SERVICES=(
+            'sddm'
+        )
+
+        DE='kde'
+
+        break
+        ;;
+    cinnamon)
+        ohai "Selected cinnamon"
+        PKGS=(
+            'lightdm'
+            'lightdm-gtk-greeter'
+            'lightdm-gtk-greeter-settings'
+            'cinnamon'
+            'metacity'
+            'gnome-shell'
+        )
+
+        DE_SERVICES=(
+            'lightdm'
+        )
+
+        DE='cinnamon'
+
+        break
+        ;;
+    xfce)
+        ohai "Selected xfce"
+        PKGS=(
+            'lightdm'
+            'lightdm-gtk-greeter'
+            'lightdm-gtk-greeter-settings'
+            'xfce4'
+            'xfce4-goodies'
+        )
+
+        DE_SERVICES=(
+            'lightdm'
+        )
+
+        DE='xfce'
+
+        break
+        ;;
+    quit)
+        abort "Aborting installation"
+        ;;
+    *)
+        echo "Invalid option. Try another one."
+        ;;
+    esac
+done
+
 # Download dependencies
 curl -fsSL https://raw.githubusercontent.com/damienbutt/arch-de/HEAD/scripts/arch-de-utils.sh >arch-de-utils.sh
 source arch-de-utils.sh
 
-ISO=$(curl -s ifconfig.co/country-iso)
-
-echo "-------------------------------------------------"
-echo "Setting up the best mirrors for ${ISO}           "
-echo "-------------------------------------------------"
-sudo reflector -a 48 -c ${ISO} -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist
-paru -Syyy
+SCRIPT_DIR="$(cd -- "$(dirname -- "")" &>/dev/null && pwd)"
 
 # Start the actual installation
 clear
 ohai "Starting Arch-DE installation"
 
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+ohai "Detecting your country"
+ISO=$(curl -s ifconfig.co/country-iso)
+
+ohai "Setting up the best mirrors for ${ISO}"
+sudo reflector -a 48 -c ${ISO} -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist &>/dev/null
+paru -Syyy &>/dev/null
 
 ohai "Setting up firewall with sensible defaults"
 sudo firewall-cmd --add-port=1025-65535/tcp --permanent
@@ -68,24 +152,44 @@ sudo firewall-cmd --reload
 
 ohai "Installing common packages"
 PKGS=(
+    # Display server
     'xorg'
+
+    # Bluetooth support
     'bluez'
     'bluez-utils'
+
+    # Printer support
     'cups'
     'hplip'
+
+    # Audio support
     'alsa-utils'
     'pipewire'
     'pipewire-alsa'
     'pipewire-pulse'
     'pipewire-jack'
+
+    # Misc.
     'firefox'
     'archlinux-wallpaper'
+
+    # Snapshots
     'snapper-gui-git'
     'snapper-rollback'
-    'gufw'
+
+    # Package management
+    'flatpak'
+    'packagekit'
 )
 
 for PKG in "${PKGS[@]}"; do
+    ohai "Installing: ${PKG}"
+    paru -S "${PKG}" --noconfirm --needed
+done
+
+ohai "Installing ${DE} packages"
+for PKG in "${DE_PKGS[@]}"; do
     ohai "Installing: ${PKG}"
     paru -S "${PKG}" --noconfirm --needed
 done
@@ -134,104 +238,33 @@ for PKG in "${PKGS[@]}"; do
     paru -S "${PKG}" --noconfirm --needed
 done
 
+ohai "Detecting your video hardware"
 if lspci | grep -E "NVIDIA|GeForce"; then
+    ohai "Installing: nvidia drivers"
     paru -S nvidia nvidia-settings nvidia-utils --noconfirm --needed
-    nvidia-xconfig
+    if [ ${DE} == 'kde' ]; then
+        ohai "Installing: nvidia-settings-daemon"
+        paru -S egl-wayland --noconfirm --needed
+    fi
 elif lspci | grep -E "Radeon"; then
+    ohai "Installing: amd drivers"
     paru -S xf86-video-amdgpu --noconfirm --needed
 elif lspci | grep -E "Integrated Graphics Controller"; then
+    ohai "Installing: intel drivers"
     paru -S libva-intel-driver libvdpau-va-gl lib32-vulkan-intel vulkan-intel libva-intel-driver libva-utils --needed --noconfirm
 fi
 
-PS3="Select desktop environment: "
-select OPT in gnome kde cinnamon xfce quit; do
-    case ${OPT} in
-    gnome)
-        ohai "Installing: gnome"
-        PKGS=(
-            'gdm'
-            'gnome'
-            'gnome-extra'
-            'qgnomeplatform'
-            'gnome-tweaks'
-        )
-
-        SERVICES=(
-            'bluetooth'
-            'cups'
-            'gdm'
-        )
-
-        break
-        ;;
-    kde)
-        ohai "Installing: kde"
-        PKGS=(
-            'sddm'
-            'plasma'
-            'kde-applications'
-            'kde-runtime'
-            'kde-plasma-desktop'
-            'kde-plasma-workspace'
-            'kde-plasma-addons'
-        )
-
-        SERVICES=(
-            'bluetooth'
-            'cups'
-            'sddm'
-        )
-
-        break
-        ;;
-    cinnamon)
-        ohai "Installing: cinnamon"
-        PKGS=(
-            'gdm'
-            'cinnamon'
-            'cinnamon-translations'
-        )
-
-        SERVICES=(
-            'bluetooth'
-            'cups'
-            'gdm'
-        )
-
-        break
-        ;;
-    xfce)
-        ohai "Installing: xfce"
-        PKGS=(
-            'xfce4'
-            'xfce4-goodies'
-            'lightdm'
-        )
-
-        SERVICES=(
-            'bluetooth'
-            'cups'
-            'lightdm'
-        )
-
-        break
-        ;;
-    quit)
-        abort "Aborting installation"
-        ;;
-    *)
-        echo "Invalid option. Try another one."
-        ;;
-    esac
-done
-
-for PKG in "${PKGS[@]}"; do
-    ohai "Installing: ${PKG}"
-    paru -S "${PKG}" --noconfirm --needed
-done
-
 ohai "Enabling services to start at boot"
+SERVICES=(
+    'bluetooth'
+    'cupsd'
+)
+
 for SERVICE in "${SERVICES[@]}"; do
+    systemctl enable "${SERVICE}" &>/dev/null
+done
+
+for SERVICE in "${DE_SERVICES[@]}"; do
     systemctl enable "${SERVICE}" &>/dev/null
 done
 
