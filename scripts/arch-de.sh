@@ -255,7 +255,7 @@ fi
 ohai "Enabling services to start at boot"
 SERVICES=(
     'bluetooth'
-    'cupsd'
+    'cups'
 )
 
 for SERVICE in "${SERVICES[@]}"; do
