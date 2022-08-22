@@ -126,8 +126,8 @@ select OPT in gnome kde cinnamon xfce quit; do
 done
 
 # Download dependencies
-curl -fsSL https://raw.githubusercontent.com/damienbutt/arch-de/HEAD/scripts/arch-de-utils.sh >arch-de-utils.sh
-source arch-de-utils.sh
+curl -fsSL https://raw.githubusercontent.com/damienbutt/arch-de/HEAD/scripts/arch-de-utils.sh >~/arch-de-utils.sh
+source ~/arch-de-utils.sh
 
 # Start the actual installation
 clear
