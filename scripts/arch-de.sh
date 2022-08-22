@@ -259,11 +259,11 @@ SERVICES=(
 )
 
 for SERVICE in "${SERVICES[@]}"; do
-    systemctl enable "${SERVICE}" &>/dev/null
+    sudo systemctl enable "${SERVICE}" &>/dev/null
 done
 
 for SERVICE in "${DE_SERVICES[@]}"; do
-    systemctl enable "${SERVICE}" &>/dev/null
+    sudo systemctl enable "${SERVICE}" &>/dev/null
 done
 
 ohai "Configuring AppArmor and Audit"
