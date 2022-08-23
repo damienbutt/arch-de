@@ -124,6 +124,7 @@ select OPT in gnome kde cinnamon xfce quit; do
             'sddm'
             'plasma'
             'plasma-wayland-session'
+            'kde-utilities'
         )
 
         DE_SERVICES=(
