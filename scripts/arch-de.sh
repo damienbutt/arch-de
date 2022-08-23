@@ -96,6 +96,8 @@ if ! have_sudo_access; then
     abort 'Insufficient permissions. You must have `sudo` access to run this script.'
 fi
 
+clear
+
 PS3="Select desktop environment: "
 select OPT in gnome kde cinnamon xfce quit; do
     case ${OPT} in
