@@ -13,6 +13,64 @@ if [ -z "${BASH_VERSION:-}" ]; then
     abort "Bash is required to interpret this script."
 fi
 
+if [[ -n "${INTERACTIVE-}" && -n "${NONINTERACTIVE-}" ]]; then
+    abort 'Both `$INTERACTIVE` and `$NONINTERACTIVE` are set. Please unset at least one variable and try again.'
+fi
+
+# Check if script is run in POSIX mode
+if [[ -n "${POSIXLY_CORRECT+1}" ]]; then
+    abort 'Bash must not run in POSIX mode. Please unset POSIXLY_CORRECT and try again.'
+fi
+
+# Check cURL is installed
+if ! command -v curl &>/dev/null; then
+    abort "$(
+        cat <<EOABORT
+You must install cURL before running this script. Run the following command:
+  ${tty_underline}pacman -S curl${tty_reset}
+EOABORT
+    )"
+fi
+
+# Check Paru is installed
+if ! command -v paru &>/dev/null; then
+    abort "$(
+        cat <<EOABORT
+You must install Paru before running this script. See:
+${tty_underline}https://aur.archlinux.org/packages/paru-bin${tty_reset}
+EOABORT
+    )"
+fi
+
+# Download dependencies
+curl -fsSL https://raw.githubusercontent.com/damienbutt/arch-de/HEAD/scripts/arch-de-utils.sh >~/arch-de-utils.sh
+source ~/arch-de-utils.sh
+
+# Check if script is run non-interactively (e.g. CI)
+# If it is run non-interactively we should not prompt for passwords.
+# Always use single-quoted strings with `exp` expressions
+if [[ -z "${NONINTERACTIVE-}" ]]; then
+    if [[ -n "${CI-}" ]]; then
+        warn 'Running in non-interactive mode because `$CI` is set.'
+        NONINTERACTIVE=1
+    elif [[ ! -t 0 ]]; then
+        if [[ -z "${INTERACTIVE-}" ]]; then
+            warn 'Running in non-interactive mode because `stdin` is not a TTY.'
+            NONINTERACTIVE=1
+        else
+            warn 'Running in interactive mode despite `stdin` not being a TTY because `$INTERACTIVE` is set.'
+        fi
+    fi
+else
+    ohai 'Running in non-interactive mode because `$NONINTERACTIVE` is set.'
+fi
+
+# USER isn't always set so provide a fall back for the installer and subprocesses.
+if [[ -z "${USER-}" ]]; then
+    USER="$(chomp "$(id -un)")"
+    export USER
+fi
+
 # First check OS.
 OS="$(uname)"
 if [[ "${OS}" != "Linux" ]]; then
@@ -33,19 +91,10 @@ tty_red="$(tty_mkbold 31)"
 tty_bold="$(tty_mkbold 39)"
 tty_reset="$(tty_escape 0)"
 
-# Check cURL is installed
-if ! command -v curl &>/dev/null; then
-    abort "$(
-        cat <<EOABORT
-You must install cURL before running this script. Run the following command:
-  ${tty_underline}pacman -S curl${tty_reset}
-EOABORT
-    )"
+ohai 'Checking for `sudo` access (which may request your password)...'
+if ! have_sudo_access; then
+    abort 'Insufficient permissions. You must have `sudo` access to run this script.'
 fi
-
-# Download dependencies
-curl -fsSL https://raw.githubusercontent.com/damienbutt/arch-de/HEAD/scripts/arch-de-utils.sh >~/arch-de-utils.sh
-source ~/arch-de-utils.sh
 
 PS3="Select desktop environment: "
 select OPT in gnome kde cinnamon xfce quit; do
