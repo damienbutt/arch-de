@@ -99,3 +99,62 @@ function cleanup() {
     unset DE_SERVICES
     unset DE
 }
+
+have_sudo_access() {
+    unset HAVE_SUDO_ACCESS
+
+    if [[ ! -x "/usr/bin/sudo" ]]; then
+        return 1
+    fi
+
+    local -a SUDO=("/usr/bin/sudo")
+    if [[ -n "${SUDO_ASKPASS-}" ]]; then
+        SUDO+=("-A")
+    elif [[ -n "${NONINTERACTIVE-}" ]]; then
+        SUDO+=("-n")
+    fi
+
+    if [[ -z "${HAVE_SUDO_ACCESS-}" ]]; then
+        if [[ -n "${NONINTERACTIVE-}" ]]; then
+            "${SUDO[@]}" -l mkdir &>/dev/null
+        else
+            "${SUDO[@]}" -v && "${SUDO[@]}" -l mkdir &>/dev/null
+        fi
+        HAVE_SUDO_ACCESS="$?"
+    fi
+
+    return "${HAVE_SUDO_ACCESS}"
+}
+
+execute_sudo() {
+    local -a args=("$@")
+    if have_sudo_access; then
+        if [[ -n "${SUDO_ASKPASS-}" ]]; then
+            args=("-A" "${args[@]}")
+        fi
+        ohai "/usr/bin/sudo" "${args[@]}"
+        execute "/usr/bin/sudo" "${args[@]}"
+    else
+        ohai "${args[@]}"
+        execute "${args[@]}"
+    fi
+}
+
+getc() {
+    local save_state
+    save_state="$(/bin/stty -g)"
+    /bin/stty raw -echo
+    IFS='' read -r -n 1 -d '' "$@"
+    /bin/stty "${save_state}"
+}
+
+wait_for_user() {
+    local c
+    echo
+    echo "Press ${tty_bold}RETURN${tty_reset}/${tty_bold}ENTER${tty_reset} to continue or any other key to abort:"
+    getc c
+    # we test for \r and \n because some stuff does \r instead
+    if ! [[ "${c}" == $'\r' || "${c}" == $'\n' ]]; then
+        exit 1
+    fi
+}
