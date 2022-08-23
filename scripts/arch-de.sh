@@ -107,6 +107,7 @@ select OPT in gnome kde cinnamon xfce quit; do
             'gnome-tweaks'
             'gnome-themes-extra'
             'gnome-software-packagekit-plugin'
+            'gnome-browser-connector'
         )
 
         DE_SERVICES=(
