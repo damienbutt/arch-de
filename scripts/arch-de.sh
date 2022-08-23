@@ -188,13 +188,13 @@ ohai "Detecting your country"
 ISO=$(curl -s ifconfig.co/country-iso)
 
 ohai "Setting up the best mirrors for ${ISO}"
-sudo reflector -a 48 -c ${ISO} -f 5 -l 20 --sort rate --save /etc/pacman.d/mirrorlist &>/dev/null
-paru -Syyy &>/dev/null
+execute_sudo "reflector" "-a" "48" "-c" "${ISO}" "-f" "5" "-l" "20" "--sort" "rate" "--save" "/etc/pacman.d/mirrorlist" &>/dev/null
+execute "paru" "-Syyy" &>/dev/null
 
 ohai "Setting up firewall with sensible defaults"
-sudo firewall-cmd --add-port=1025-65535/tcp --permanent &>/dev/null
-sudo firewall-cmd --add-port=1025-65535/udp --permanent &>/dev/null
-sudo firewall-cmd --reload &>/dev/null
+execute_sudo "firewall-cmd" "--add-port=1025-65535/tcp" "--permanent" &>/dev/null
+execute_sudo "firewall-cmd" "--add-port=1025-65535/udp" "--permanent" &>/dev/null
+execute_sudo "firewall-cmd" "--reload" &>/dev/null
 
 ohai "Installing common packages"
 PKGS=(
@@ -231,32 +231,32 @@ PKGS=(
 
 for PKG in "${PKGS[@]}"; do
     ohai "Installing: ${PKG}"
-    paru -S "${PKG}" --noconfirm --needed
+    execute "paru" "-S" "${PKG}" "--noconfirm" "--needed"
 done
 
 ohai "Installing ${DE} packages"
 for PKG in "${DE_PKGS[@]}"; do
     ohai "Installing: ${PKG}"
-    paru -S "${PKG}" --noconfirm --needed
+    execute "paru" "-S" "${PKG}" "--noconfirm" "--needed"
 done
 
 ohai "Detecting your video hardware"
 if lspci | grep -E "NVIDIA|GeForce"; then
     ohai "Installing: nvidia drivers"
-    paru -S nvidia nvidia-settings nvidia-utils --noconfirm --needed
+    execute "paru" "-S" "nvidia" "nvidia-settings" "nvidia-utils" "--noconfirm" "--needed"
     if [ ${DE} == 'kde' ]; then
         ohai "Installing: nvidia-settings-daemon"
-        paru -S egl-wayland --noconfirm --needed
+        execute "paru" "-S" "egl-wayland" "--noconfirm" "--needed"
     fi
 elif lspci | grep -E "Radeon"; then
     ohai "Installing: amd drivers"
-    paru -S xf86-video-amdgpu --noconfirm --needed
+    execute "paru" "-S" "xf86-video-amdgpu" "--noconfirm" "--needed"
 elif lspci | grep -E "Integrated Graphics Controller"; then
     ohai "Installing: intel drivers"
-    paru -S libva-intel-driver libvdpau-va-gl lib32-vulkan-intel vulkan-intel libva-intel-driver libva-utils --needed --noconfirm
+    execute "paru" "-S" "libva-intel-driver" "libvdpau-va-gl" "lib32-vulkan-intel" "vulkan-intel" "libva-intel-driver" "libva-utils" "--needed" "--noconfirm"
 else
     ohai "Installing: vm drivers"
-    paru -S xf86-video-vmware open-vm-tools --needed --noconfirm
+    execute "paru" "-S" "xf86-video-vmware" "open-vm-tools" "--needed" "--noconfirm"
     VM='true'
 fi
 
@@ -267,11 +267,11 @@ SERVICES=(
 )
 
 for SERVICE in "${SERVICES[@]}"; do
-    sudo systemctl enable "${SERVICE}" &>/dev/null
+    execute_sudo "systemctl" "enable" "${SERVICE}" &>/dev/null
 done
 
 for SERVICE in "${DE_SERVICES[@]}"; do
-    sudo systemctl enable "${SERVICE}" &>/dev/null
+    execute_sudo "systemctl" "enable" "${SERVICE}" &>/dev/null
 done
 
 if [ ${VM} == 'true' ]; then
@@ -280,13 +280,13 @@ if [ ${VM} == 'true' ]; then
     )
 
     for SERVICE in "${SERVICES[@]}"; do
-        sudo systemctl enable "${SERVICE}" &>/dev/null
+        execute_sudo "systemctl" "enable" "${SERVICE}" &>/dev/null
     done
 fi
 
 ohai "Configuring AppArmor and Audit"
-sudo groupadd -r audit
-sudo gpasswd -a ${USER} audit
+execute_sudo "groupadd" "-r" "audit"
+execute_sudo "gpasswd" "-a" ${USER} "audit"
 
 ohai "Configuring audit log group"
 cat <<EOS
